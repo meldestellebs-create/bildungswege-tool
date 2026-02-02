@@ -2,27 +2,27 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<title>Bildungswege-Tool für Jugendliche</title>
+<title>Bildungswege-Tool</title>
 <style>
   body {
-    font-family: 'Arial', sans-serif;
-    background: linear-gradient(to bottom, #f0f8ff, #e6f7ff);
+    font-family: Arial, sans-serif;
+    background: #f2f7fb;
     color: #333;
     margin: 0;
     padding: 0;
   }
   header {
-    background-color: #007acc;
+    background-color: #005f99;
     color: white;
-    padding: 20px;
     text-align: center;
+    padding: 20px 10px;
   }
   header h1 {
     margin: 0;
     font-size: 2rem;
   }
   .container {
-    max-width: 800px;
+    max-width: 900px;
     margin: 30px auto;
     padding: 20px;
     background: white;
@@ -43,124 +43,154 @@
     font-size: 1rem;
   }
   button {
-    background-color: #007acc;
+    background-color: #005f99;
     color: white;
     border: none;
     cursor: pointer;
     font-weight: bold;
   }
   button:hover {
-    background-color: #005fa3;
+    background-color: #004c7a;
   }
   #result {
     margin-top: 20px;
     padding: 15px;
-    background-color: #e6f7ff;
+    background-color: #e6f0f8;
     border-radius: 10px;
-    font-size: 1.1rem;
+    font-size: 1rem;
   }
-  #result ul {
-    list-style-type: disc;
-    padding-left: 20px;
+  .path {
+    margin-bottom: 12px;
+    padding: 10px;
+    border-left: 5px solid #005f99;
+    background: #f9fbfd;
+    border-radius: 5px;
+  }
+  .path span {
+    display: inline-block;
+    margin-right: 5px;
   }
 </style>
 </head>
 <body>
 
 <header>
-  <h1>Dein Weg zu Schulabschluss & Zukunft</h1>
-  <p>Finde passende Bildungswege für dich – einfach, klar & motivierend!</p>
+  <h1>Bildungswege-Tool</h1>
 </header>
 
 <div class="container">
-  <label for="start">Aktueller Abschluss:</label>
+  <label for="start">Startpunkt:</label>
   <select id="start">
     <option value="">— auswählen —</option>
-    <option value="kein">Kein Abschluss</option>
+    <option value="ohne">Ohne Abschluss</option>
+    <option value="sbbz">SBBZ</option>
+    <option value="vabo">VABO</option>
+    <option value="avdual">AVdual</option>
     <option value="haupt">Hauptschulabschluss</option>
-    <option value="mittlere">Mittlere Reife</option>
+    <option value="mittlere">Mittlere Reife/Mittlerer Bildungsabschluss</option>
     <option value="fachhoch">Fachhochschulreife</option>
-    <option value="abitur">Abitur</option>
+    <option value="abitur">Abitur/Allgemeine Hochschulreife</option>
+    <option value="meister">Meister/Techniker/Fachwirt</option>
   </select>
 
-  <label for="ziel">Gewünschter Abschluss / Ziel:</label>
+  <label for="ziel">Zielpunkt:</label>
   <select id="ziel">
     <option value="">— auswählen —</option>
+    <option value="bve">BVE</option>
+    <option value="foerderschule">Förderschulabschluss</option>
+    <option value="vab">VAB</option>
+    <option value="sonderberufsschule">Sonderberufsschule</option>
     <option value="haupt">Hauptschulabschluss</option>
-    <option value="mittlere">Mittlere Reife</option>
+    <option value="berufsabschluss">Berufsabschluss</option>
+    <option value="mittlere">Mittlere Reife/Mittlerer Bildungsabschluss</option>
     <option value="fachhoch">Fachhochschulreife</option>
-    <option value="abitur">Abitur</option>
-    <option value="ausbildung">Berufsabschluss</option>
-    <option value="studium">Studium</option>
+    <option value="abitur">Abitur/Allg. Hochschulreife</option>
+    <option value="meister">Meister/Techniker/Fachwirt</option>
+    <option value="studium">Bachelor/Master/Promotion</option>
   </select>
 
-  <button onclick="berechneWege()">Zeige Wege</button>
+  <button onclick="showPaths()">Zeige Wege</button>
 
   <div id="result"></div>
 </div>
 
 <script>
-// Erweiterte Bildungslogik für mehr Auswahlmöglichkeiten
-const bildungslogik = {
-  kein: {
-    haupt: ["AVdual Vorbereitung", "Berufsorientierung"],
-    mittlere: ["AVdual + 2-jährige Berufsfachschule", "AVdual + Duale Ausbildung mit mittlerer Anerkennung"],
-    fachhoch: ["AVdual + weiterführende Schulform (Berufskolleg)"],
-    abitur: ["AVdual + Berufliches Gymnasium oder Abendschule"],
-    ausbildung: ["AVdual + Duale Ausbildung"],
-    studium: ["Zuerst Abitur notwendig, dann Studium"]
+const paths = {
+  "ohne": {
+    "bve": [["Ohne Abschluss","BVE"]],
+    "foerderschule": [["Ohne Abschluss","Förderschule"]],
+    "vab": [["Ohne Abschluss","VAB"]],
+    "sonderberufsschule": [["Ohne Abschluss","Sonderberufsschule"]],
+    "haupt": [["Ohne Abschluss","AVdual","Hauptschulabschluss"]],
+    "berufsabschluss": [["Ohne Abschluss","AVdual","Duale Ausbildung"]],
+    "mittlere": [
+      ["Ohne Abschluss","AVdual","2-jährige Berufsfachschule","Mittlere Reife"],
+      ["Ohne Abschluss","AVdual","Duale Ausbildung","Mittlere Reife"],
+      ["Ohne Abschluss","AVdual","Berufsfachschule + Praxis","Mittlere Reife"],
+      ["Ohne Abschluss","AVdual","Berufliches Gymnasium (BOS) nach Praxis","Mittlere Reife"],
+      ["Ohne Abschluss","AVdual","Abendschule / Nachholabschluss","Mittlere Reife"]
+    ],
+    "fachhoch": [["Ohne Abschluss","AVdual","Berufskolleg","Fachhochschulreife"]],
+    "abitur": [["Ohne Abschluss","AVdual","Berufliches Gymnasium","Abitur"]],
+    "meister": [["Ohne Abschluss","AVdual","Duale Ausbildung","Berufsabschluss","Aufstiegsfortbildung","Meister/Techniker/Fachwirt"]],
+    "studium": [["Ohne Abschluss","AVdual","Abitur","Studium"]]
   },
-  haupt: {
-    haupt: ["Du hast den gleichen Abschluss"],
-    mittlere: ["2-jährige Berufsfachschule", "Duale Ausbildung mit mittlerer Anerkennung"],
-    fachhoch: ["Berufskolleg", "Gymnasiale Oberstufe nach Berufsausbildung"],
-    abitur: ["Berufliches Gymnasium oder Abendschule (BOS)"],
-    ausbildung: ["Duale Ausbildung", "Berufsfachschule mit Berufsausbildung"],
-    studium: ["Zuerst Abitur notwendig"]
-  },
-  mittlere: {
-    haupt: ["Höherer Abschluss vorhanden"],
-    mittlere: ["Du hast den gleichen Abschluss"],
-    fachhoch: ["Berufskolleg", "Gymnasiale Oberstufe nach Berufsausbildung"],
-    abitur: ["Gymnasiale Oberstufe", "Berufliches Gymnasium"],
-    ausbildung: ["Duale Ausbildung", "Berufsfachschule"],
-    studium: ["Studium nach Abitur möglich"]
-  },
-  fachhoch: {
-    haupt: ["Höherer Abschluss vorhanden"],
-    mittlere: ["Höherer Abschluss vorhanden"],
-    fachhoch: ["Du hast den gleichen Abschluss"],
-    abitur: ["Berufliches Gymnasium oder weiterführende Schulformen"],
-    ausbildung: ["Duale Ausbildung möglich"],
-    studium: ["Studium mit fachgebundener Berechtigung"]
-  },
-  abitur: {
-    haupt: ["Höherer Abschluss vorhanden"],
-    mittlere: ["Höherer Abschluss vorhanden"],
-    fachhoch: ["Höherer Abschluss vorhanden"],
-    abitur: ["Du hast den gleichen Abschluss"],
-    ausbildung: ["Duale Ausbildung möglich"],
-    studium: ["Studium an Hochschule möglich"]
+  "haupt": {
+    "mittlere": [
+      ["Hauptschulabschluss","2-jährige Berufsfachschule","Mittlere Reife"],
+      ["Hauptschulabschluss","Duale Ausbildung","Mittlere Reife"],
+      ["Hauptschulabschluss","Berufsfachschule + Praxis","Mittlere Reife"],
+      ["Hauptschulabschluss","Berufliches Gymnasium (BOS) nach Praxis","Mittlere Reife"],
+      ["Hauptschulabschluss","Abendschule / Nachholabschluss","Mittlere Reife"]
+    ],
+    "berufsabschluss": [
+      ["Hauptschulabschluss","Duale Ausbildung"],
+      ["Hauptschulabschluss","Berufsfachschule + Praxis","Duale Ausbildung"]
+    ],
+    "fachhoch": [
+      ["Hauptschulabschluss","Berufskolleg","Fachhochschulreife"],
+      ["Hauptschulabschluss","Berufliches Gymnasium","Fachhochschulreife"]
+    ],
+    "abitur": [
+      ["Hauptschulabschluss","Berufliches Gymnasium","Abitur"],
+      ["Hauptschulabschluss","Abendschule / BOS","Abitur"]
+    ],
+    "studium": [
+      ["Hauptschulabschluss","Berufliches Gymnasium","Abitur","Studium"],
+      ["Hauptschulabschluss","Abendschule / BOS","Abitur","Studium"]
+    ]
   }
+  // Hier können weitere Startpunkte ergänzt werden wie sbbz, vabo, avdual, mittlere, fachhoch, abitur, meister
 };
 
-function berechneWege() {
+function showPaths() {
   const s = document.getElementById("start").value;
   const z = document.getElementById("ziel").value;
   const out = document.getElementById("result");
+  out.innerHTML = "";
 
-  if (!s || !z) {
-    out.innerHTML = "<strong>Bitte wähle beide Felder aus!</strong>";
+  if(!s || !z) {
+    out.innerHTML = "Bitte Start und Ziel auswählen.";
     return;
   }
 
-  const result = bildungslogik[s]?.[z];
+  const sPaths = paths[s]?.[z];
 
-  if (result) {
-    out.innerHTML = "<strong>Mögliche Wege:</strong><ul>" + result.map(w => "<li>" + w + "</li>").join("") + "</ul>";
-  } else {
-    out.innerHTML = "<strong>Keine Wege gefunden für diese Kombination.</strong>";
+  if(!sPaths || sPaths.length === 0) {
+    out.innerHTML = "Keine Wege gefunden.";
+    return;
   }
+
+  sPaths.forEach(pf => {
+    const div = document.createElement("div");
+    div.className = "path";
+    pf.forEach((station, idx) => {
+      const span = document.createElement("span");
+      span.textContent = station + (idx < pf.length -1 ? " →" : "");
+      div.appendChild(span);
+    });
+    out.appendChild(div);
+  });
 }
 </script>
 
