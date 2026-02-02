@@ -7,7 +7,7 @@
 body { font-family: Arial, sans-serif; background: #f2f7fb; color:#333; margin:0; padding:0;}
 header { background:#005f99; color:white; text-align:center; padding:20px 10px;}
 header h1 { margin:0; font-size:2rem;}
-.container { max-width:900px; margin:30px auto; padding:20px; background:white; border-radius:12px; box-shadow:0 4px 10px rgba(0,0,0,0.1);}
+.container { max-width:950px; margin:30px auto; padding:20px; background:white; border-radius:12px; box-shadow:0 4px 10px rgba(0,0,0,0.1);}
 label { font-weight:bold; display:block; margin:12px 0 6px;}
 select, button { padding:10px; width:100%; border-radius:8px; border:1px solid #ccc; margin-bottom:16px; font-size:1rem;}
 button { background-color:#005f99; color:white; border:none; cursor:pointer; font-weight:bold;}
@@ -60,7 +60,6 @@ button:hover { background-color:#004c7a;}
 </div>
 
 <script>
-// Vollständige Pfade für alle Kombinationen
 const paths = {
   "ohne": {
     "bve":[["Ohne Abschluss","BVE"]],
@@ -96,6 +95,7 @@ const paths = {
     "berufsabschluss":[["VABO","Duale Ausbildung"]],
     "fachhoch":[["VABO","Berufskolleg","Fachhochschulreife"]],
     "abitur":[["VABO","Berufliches Gymnasium","Abitur"]],
+    "meister":[["VABO","Berufsabschluss","Aufstiegsfortbildung","Meister/Techniker/Fachwirt"]],
     "studium":[["VABO","Abitur","Studium"]]
   },
   "avdual": {
@@ -153,12 +153,9 @@ function showPaths(){
   const z=document.getElementById("ziel").value;
   const out=document.getElementById("result");
   out.innerHTML="";
-
   if(!s||!z){ out.innerHTML="Bitte Start und Ziel auswählen."; return; }
-
   const sPaths=paths[s]?.[z];
   if(!sPaths||sPaths.length===0){ out.innerHTML="Keine Wege gefunden."; return; }
-
   sPaths.forEach(pf=>{
     const div=document.createElement("div");
     div.className="path";
@@ -171,5 +168,6 @@ function showPaths(){
   });
 }
 </script>
+
 </body>
 </html>
